@@ -6,7 +6,7 @@ class RandomColor {
   has @.list;
 
   method BUILD(*%options) {
-    for %options<keys> {
+    for %options.keys {
       die "Invalid option '$_'"
         unless $_ eq <hue luminosity count seed format alpha>.any;
     }
@@ -21,26 +21,27 @@ class RandomColor {
     }
 
     self.loadColorBounds;
-    my $h = self.pickHue(%options);
-    my $s = self.pickSatiration($h, %options);
-    my $v = self.pickBrightness($h, $s, %options);
 
-    my %copy-opts = %options.clone;
+    my $oldSeed = $!seed;
     for ^(%options<count> // 1) {
-      %copy-opts<seed>++ if $_;
-      @!list.push: self.setFormat( [$h, $s, $v], %copy-opts );
+      with $!seed { $!seed++  if $_ }
+      my $h = self.pickHue(%options);
+      my $s = self.pickSaturation($h, %options);
+      my $v = self.pickBrightness($h, $s, %options);
+      @!list.push: self.setFormat( [$h, $s, $v], %options );
     }
+    $!seed = $oldSeed;
   }
 
   method pickHue(%options) {
-    my $hue = self.randomWithin( self.getHueRange(%options<hue>) );
+    my $hue = self.randomWithin( |self.getHueRange(%options<hue>) );
     $hue = 360 + $hue if $hue < 0;
     $hue;
   }
 
   method pickSaturation($h, %options) {
-    return 0            if %options<hue> eq 'monochrome';
-    return (0..99).pick if %options<luminosity> eq 'random';
+    return 0            if (%options<hue> // '')        eq 'monochrome';
+    return (0..99).pick if (%options<luminosity> // '') eq 'random';
 
     my $saturationRange = self.getSaturationRange($h);
     my ($sMin, $sMax) = ($saturationRange.min, $saturationRange.max);
@@ -75,7 +76,7 @@ class RandomColor {
                           "hsla({ $hsl.join(', ') }, $a)"  }
       when 'rgbarray'   { self.HSVtoRGB($hsv)              }
       when 'rgb'        { my $rgb = self.HSVtoRGB($hsv);
-                          "rgb({ $rgb.join(', ') }"        }
+                          "rgb({ $rgb.join(', ') })"        }
       when 'rgba'       { my $rgb = self.HSVtoRGB($hsv);
                           my $a = %options<alpha> // rand;
                           "rgba({ $rgb.join(', ') }, $a)"  }
@@ -91,7 +92,8 @@ class RandomColor {
       my ($s2, $v2) = $lowerBounds[$_ + 1];
 
       if $s1 <= $s <= $s2 {
-        my ($m, $b) = ( ($v2 - $v1) / ($s2 - $s1), $v1 - $m * $s1 );
+        my $m = ($v2 - $v1) / ($s2 - $s1);
+        my $b = $v1 - $m * $s1;
         return $m * $s + $b
       }
     }
@@ -120,7 +122,9 @@ class RandomColor {
 
   method getColorInfo($h is copy) {
     $h -= 360 if 334 <= $h <= 360;
-    for %!colorDict.keys -> $c {
+    for %!colorDict.keys {
+      next without %!colorDict{$_}<hueRange>;
+      my $c = %!colorDict{$_};
       return $c if $c<hueRange>[0] <= $h <= $c<hueRange>[1];
     }
     return 'Color not found'
@@ -136,8 +140,9 @@ class RandomColor {
     }
   }
 
-  method HSVtoHEX($hsv) {
-    "#{ self.HSVtoRGB($hsv).map( .fmt('02x') ).join() }"
+  method HSVtoHex($hsv) {
+    my @rgb = self.HSVtoRGB($hsv);
+    "#{ @rgb.map( *.fmt('%02x') ).join() }"
   }
 
   method defineColor($name, $hueRange, $lowerBounds) {
@@ -192,7 +197,7 @@ class RandomColor {
     my $f = $h * 6 - $h_i;
     my $p = $v * (1 - $s);
     my $q = $v * (1 - $f * $s);
-    my $t = $v * (1 = (1 - $f) * $s);
+    my $t = $v * (1 - (1 - $f) * $s);
     my ($r, $g, $b) = (256 xx 3);
 
     given $h_i {
@@ -204,7 +209,7 @@ class RandomColor {
       when 5 { ($r, $g, $b) = ($v, $p, $q) }
     }
 
-    (($r, $g, $b) »*« (255 xx 3)).map( *.floor );
+    (($r, $g, $b) »*« (255 xx 3)).map( *.floor ).List;
   }
 
   method HexToHSB($hex is copy) {
