@@ -1,5 +1,9 @@
 use v6.c;
 
+my $color-support;
+try require ::('Color');
+$color-support = ::('Color') !~~ Failure;
+
 class RandomColor {
   has $!seed;
   has %!colorDict;
@@ -9,6 +13,11 @@ class RandomColor {
     for %options.keys {
       die "Invalid option '$_'"
         unless $_ eq <hue luminosity count seed format alpha>.any;
+    }
+
+    if %options<format> eq 'color' {
+      die "A format value of 'color' requires the 'Color' Perl6 module"
+        unless $color-support;
     }
 
     if %options<seed>:exists {
@@ -76,10 +85,11 @@ class RandomColor {
                           "hsla({ $hsl.join(', ') }, $a)"  }
       when 'rgbarray'   { self.HSVtoRGB($hsv)              }
       when 'rgb'        { my $rgb = self.HSVtoRGB($hsv);
-                          "rgb({ $rgb.join(', ') })"        }
+                          "rgb({ $rgb.join(', ') })"       }
       when 'rgba'       { my $rgb = self.HSVtoRGB($hsv);
                           my $a = %options<alpha> // rand;
                           "rgba({ $rgb.join(', ') }, $a)"  }
+      when 'color'      { ::('Color').new( hsv => $hsv )   }
       default           { self.HSVtoHex($hsv)              }
     }
   }
