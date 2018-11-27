@@ -3,6 +3,7 @@ use v6.c;
 class RandomColor {
   has $!seed;
   has %!colorDict;
+  has @.list;
 
   method BUILD(*%options) {
     for %options<keys> {
@@ -10,11 +11,25 @@ class RandomColor {
         unless $_ eq <hue luminosity count seed format alpha>.any;
     }
 
+    if %options<seed>:exists {
+      die 'The seed value must be an integer' unless %options<seed> ~~ Int;
+      $!seed = %options<seed>;
+    }
+    if %options<count>:exists {
+      die 'The options value must be an integer'
+        unless %options<count> ~~ Int;
+    }
+
     self.loadColorBounds;
     my $h = self.pickHue(%options);
     my $s = self.pickSatiration($h, %options);
     my $v = self.pickBrightness($h, $s, %options);
-    self.setFormat( [$h, $s, $v], %options );
+
+    my %copy-opts = %options.clone;
+    for ^(%options<count> // 1) {
+      %copy-opts<seed>++ if $_;
+      @!list.push: self.setFormat( [$h, $s, $v], %copy-opts );
+    }
   }
 
   method pickHue(%options) {
