@@ -115,3 +115,10 @@ ok
   'Setting luminosity to dark results in dark colors';
 
 # Optional test for color support
+try require ::('Color');
+if ::('Color') !~~ Failure {
+  $rc = RandomColor.new( format => 'color', count => 5 ).list;
+  ok $rc.all ~~ ::('Color'), 'Color object support is functioning properly';
+} else {
+  pass 'Color object tests skipped!'
+}

@@ -13,5 +13,6 @@
     "test-depends": ["Test::META"],
     "build-depends": [],
     "support": {"source": null},
-    "authors": ["clifton.wood@gmail.com"]
+    "authors": ["clifton.wood@gmail.com"],
+    "tags": [ "color" ]
 }
