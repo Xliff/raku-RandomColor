@@ -65,7 +65,7 @@ class RandomColor {
   method pickBrightness($h, $s, %options) {
     my ($bMin, $bMax) = ( self.getMinimumBrightness($h, $s), 100 );
 
-    given %options<lumosity> {
+    given %options<luminosity> {
       when 'dark'   { $bMin = $bMax = 20          }
       when 'light'  { $bMin = ($bMin + $bMax) / 2 }
       when 'random' { ($bMin, $bMax) = (0, 100)   }

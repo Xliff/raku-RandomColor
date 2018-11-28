@@ -101,15 +101,15 @@ for ( ['red', 0],  ['green', 1], ['blue', 2] ) -> $ct {
 # Test bright
 $rc = RandomColor.new(
   luminosity => 'bright', count => 5, format => 'hslarray'
-);
+).list;
 ok
   $rc.map( *[1] ).grep( * < 55 ).elems == 0,
   'Setting luminosity to bright results in bright colors';
 
 # Test dark
 $rc = RandomColor.new(
-  luminosity => 'dark', count => 5, format => 'hslarray'
-);
+  luminosity => 'dark', count => 5, format => 'hsvarray'
+).list;
 ok
   $rc.map( *[1] ).grep( * != 10 ).elems == 0,
   'Setting luminosity to dark results in dark colors';
