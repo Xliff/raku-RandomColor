@@ -15,9 +15,9 @@ class RandomColor {
         unless $_ eq <hue luminosity count seed format alpha>.any;
     }
 
-    if %options<format> eq 'color' {
+    if %options<format>:exists {
       die "A format value of 'color' requires the 'Color' Perl6 module"
-        unless $color-support;
+        unless %options<format> ne 'color' || $color-support;
     }
 
     if %options<seed>:exists {

@@ -11,7 +11,7 @@
     "name": "p6-RandomColor",
     "perl": "6.c",
     "test-depends": ["Test::META"],
-    "build-depends": ["Text::Table::Simple"],
+    "build-depends": [],
     "support": {"source": null},
     "authors": ["clifton.wood@gmail.com"]
 }
