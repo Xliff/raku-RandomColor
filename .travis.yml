@@ -4,7 +4,7 @@ perl6:
   - 2016.04
 install:
   - rakudobrew build-zef
-  - zef install --deps-only .
+  - zef --deps-only install .
 branches:
   only:
     - master
