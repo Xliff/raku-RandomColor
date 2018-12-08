@@ -4,7 +4,7 @@ perl6:
   - 2016.04
 install:
   - rakudobrew build-panda
-  - panda installdeps .
+  - zef install --deps-only .
 branches:
   only:
     - master
