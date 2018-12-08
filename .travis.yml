@@ -1,7 +1,7 @@
 language: perl6
 perl6:
   - latest
-  - 2016.04
+  - 2018.11
 install:
   - rakudobrew build-zef
   - zef --deps-only install .
