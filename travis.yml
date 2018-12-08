@@ -1,0 +1,10 @@
+language: perl6
+perl6:
+  - latest
+  - 2016.04
+install:
+  - rakudobrew build-panda
+  - panda installdeps .
+branches:
+  only:
+    - master
