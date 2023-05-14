@@ -1,4 +1,4 @@
-# p6-RandomColor
+# raku-RandomColor
 A port of the RandomColor JavaScript library for Perl6.
 
 # [Random Color](https://randomcolor.lllllllllllllllll.com)
