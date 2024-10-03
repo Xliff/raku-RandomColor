@@ -4,11 +4,11 @@
     "version": "v0.11",
     "meta-version": "0",
     "license": "",
-    "source-url": "https://github.com/Xliff/p6-RandomColor.git",
+    "source-url": "https://github.com/Xliff/raku-RandomColor.git",
     "provides": {
       "RandomColor": "lib/RandomColor.pm6"
     },
-    "name": "p6-RandomColor",
+    "name": "raku-RandomColor",
     "perl": "6.c",
     "test-depends": ["Test::META"],
     "build-depends": [],
